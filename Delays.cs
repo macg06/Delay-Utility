@@ -14,6 +14,8 @@ namespace MACG.Utility
             GameObject.DontDestroyOnLoad(handler.gameObject);
             GameObject obj = handler.gameObject;
             
+            // This creates 50 components per delay type. Feel free to modify the number for your own needs, if you feel like this is wasteful.
+            // Just so you know, in total, this is 200 components.
             for (int i = 0; i < 50; i++)
             {
                 obj.AddComponent<DEL_RunInNextFrame>().enabled = false;
