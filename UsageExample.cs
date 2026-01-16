@@ -19,10 +19,7 @@ public class UsageExample : MonoBehaviour
         // Changing volume to 0 for 1 second. This will persist between scenes. If the scene is changed while this is running, the audio will keep turning down.
         Delays.RunForSeconds((() =>
         {
-            while (AudioListener.volume >= 0)
-            {
-                AudioListener.volume = Mathf.MoveTowards(AudioListener.volume, 0, Time.deltaTime);
-            }
+            AudioListener.volume = Mathf.MoveTowards(AudioListener.volume, 0, Time.deltaTime);
         }), 1, true);
     }
 }
