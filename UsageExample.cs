@@ -6,6 +6,8 @@ public class UsageExample : MonoBehaviour
     private Transform ExampleTransform;
     private void Start()
     {
+        ExampleTransform = new GameObject("example").transform;
+        
         Delays.RunInNextFrame(() => {Debug.Log("Initialized something in the second frame!");});
         Delays.RunInNextFrame(() => {Debug.Log("Initialized something in the 5th frame!");}, 5);
         
