@@ -44,7 +44,7 @@ namespace MACG.Utility
         }
 
         /// <param name="persist">Use this only for persistent things, like global managers or objects that use DontDestroyOnLoad. If this is used wrong, Unity will freak out and throw errors.</param>
-        public static DEL_RunForFrames RunForFrames(Action action, int frames, bool persist = false)
+        public static DEL_RunForFrames RunForFrames(Action action, int frames = 1, bool persist = false)
         {
             DEL_RunForFrames comp = DelayHandler.Instance.GetRunForFrames();
             if (comp == null) return null;
@@ -59,7 +59,7 @@ namespace MACG.Utility
         #region seconds
         
         /// <param name="persist">Use this only for persistent things, like global managers or objects that use DontDestroyOnLoad. If this is used wrong, Unity will freak out and throw errors.</param>
-        public static DEL_RunInSeconds RunInSeconds(Action action, float seconds, bool persist = false)
+        public static DEL_RunInSeconds RunInSeconds(Action action, float seconds = 1, bool persist = false)
         {
             DEL_RunInSeconds comp = DelayHandler.Instance.GetRunInSeconds();
             if (comp == null) return null;
@@ -71,7 +71,7 @@ namespace MACG.Utility
         }
         
         /// <param name="persist">Use this only for persistent things, like global managers or objects that use DontDestroyOnLoad. If this is used wrong, Unity will freak out and throw errors.</param>
-        public static DEL_RunForSeconds RunForSeconds(Action action, float seconds, bool persist = false)
+        public static DEL_RunForSeconds RunForSeconds(Action action, float seconds = 1, bool persist = false)
         {
             DEL_RunForSeconds comp = DelayHandler.Instance.GetRunForSeconds();
             if (comp == null) return null;
