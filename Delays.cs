@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +14,7 @@ namespace MACG.Utility
         {
             DelayHandler handler = new GameObject().AddComponent<DelayHandler>();
             GameObject.DontDestroyOnLoad(handler.gameObject);
+            DelayHandler.Instance = handler;
             GameObject obj = handler.gameObject;
             
             // This creates 50 components per delay type. Feel free to modify the number for your own needs, if you feel like this is wasteful.
@@ -23,10 +26,11 @@ namespace MACG.Utility
                 obj.AddComponent<DEL_RunForFrames>().enabled = false;
                 obj.AddComponent<DEL_RunForSeconds>().enabled = false;
             }
-            handler.RunInNextFrames = handler.GetComponents<DEL_RunInNextFrame>();
-            handler.RunInSeconds = handler.GetComponents<DEL_RunInSeconds>();
-            handler.RunForFrames = handler.GetComponents<DEL_RunForFrames>();
-            handler.RunForSeconds = handler.GetComponents<DEL_RunForSeconds>();
+
+            handler.RunInNextFrames = handler.GetComponents<DEL_RunInNextFrame>().ToList();
+            handler.RunInSeconds = handler.GetComponents<DEL_RunInSeconds>().ToList();
+            handler.RunForFrames = handler.GetComponents<DEL_RunForFrames>().ToList();
+            handler.RunForSeconds = handler.GetComponents<DEL_RunForSeconds>().ToList();
         }
         
         #region frames
@@ -86,10 +90,15 @@ namespace MACG.Utility
     
     public class DelayHandler : MonoBehaviour
     {
-        public DEL_RunInNextFrame[] RunInNextFrames;
-        public DEL_RunInSeconds[] RunInSeconds;
-        public DEL_RunForFrames[] RunForFrames;
-        public DEL_RunForSeconds[] RunForSeconds;
+        public List<DEL_RunInNextFrame> RunInNextFrames = new List<DEL_RunInNextFrame>();
+        public List<DEL_RunInSeconds> RunInSeconds = new List<DEL_RunInSeconds>();
+        public List<DEL_RunForFrames> RunForFrames = new List<DEL_RunForFrames>();
+        public List<DEL_RunForSeconds> RunForSeconds = new List<DEL_RunForSeconds>();
+
+        // This defines how many new components it adds when the limit is reached.
+        // You *could* make this 1 if you want.
+        // The reason I made it 5 is because it might stutter a bit less if it creates new components in advance, if you have a lot of delays planned at the same time.
+        private const int AUTO_GROW_COUNT = 5;
 
         public static DelayHandler Instance;
 
@@ -97,7 +106,7 @@ namespace MACG.Utility
 
         public DEL_RunInNextFrame GetRunInNextFrame()
         {
-            for (int i = 0; i < RunInNextFrames.Length; i++)
+            for (int i = 0; i < RunInNextFrames.Count; i++)
             {
                 if (RunInNextFrames[i].enabled) continue;
 
@@ -105,13 +114,24 @@ namespace MACG.Utility
                 return RunInNextFrames[i];
             }
 
-            Debug.LogError("Can't return a 'RunInNextFrame'. All are used. ._.");
-            return null;
+            Debug.LogError($"Reached limit for ''DEL_RunInNextFrame''. We're adding {AUTO_GROW_COUNT} new components.");
+
+            DEL_RunInNextFrame delayToReturn = null;
+            for (int i = 0; i < AUTO_GROW_COUNT; i++)
+            {
+                DEL_RunInNextFrame newDelay = gameObject.AddComponent<DEL_RunInNextFrame>();
+                RunInNextFrames.Add(newDelay);
+                newDelay.enabled = false;
+                if (i == 0) delayToReturn = newDelay;
+            }
+
+            delayToReturn.enabled = true;
+            return delayToReturn;
         }
 
         public DEL_RunInSeconds GetRunInSeconds()
         {
-            for (int i = 0; i < RunInSeconds.Length; i++)
+            for (int i = 0; i < RunInSeconds.Count; i++)
             {
                 if (RunInSeconds[i].enabled) continue;
 
@@ -119,13 +139,24 @@ namespace MACG.Utility
                 return RunInSeconds[i];
             }
 
-            Debug.LogError("Can't return a 'RunInSeconds'. All are used. ._.");
-            return null;
+            Debug.LogError($"Reached limit for ''DEL_RunInSeconds''. We're adding {AUTO_GROW_COUNT} new components.");
+
+            DEL_RunInSeconds delayToReturn = null;
+            for (int i = 0; i < AUTO_GROW_COUNT; i++)
+            {
+                DEL_RunInSeconds newDelay = gameObject.AddComponent<DEL_RunInSeconds>();
+                RunInSeconds.Add(newDelay);
+                newDelay.enabled = false;
+                if(i == 0) delayToReturn = newDelay;
+            }
+
+            delayToReturn.enabled = true;
+            return delayToReturn;
         }
 
         public DEL_RunForFrames GetRunForFrames()
         {
-            for (int i = 0; i < RunForFrames.Length; i++)
+            for (int i = 0; i < RunForFrames.Count; i++)
             {
                 if (RunForFrames[i].enabled) continue;
 
@@ -133,13 +164,24 @@ namespace MACG.Utility
                 return RunForFrames[i];
             }
 
-            Debug.LogError("Can't return a 'RunForFrames'. All are used. ._.");
-            return null;
+            Debug.LogError($"Reached limit for ''DEL_RunForFrames''. We're adding {AUTO_GROW_COUNT} new components.");
+
+            DEL_RunForFrames delayToReturn = null;
+            for (int i = 0; i < AUTO_GROW_COUNT; i++)
+            {
+                DEL_RunForFrames newDelay = gameObject.AddComponent<DEL_RunForFrames>();
+                RunForFrames.Add(newDelay);
+                newDelay.enabled = false;
+                if(i == 0) delayToReturn = newDelay;
+            }
+
+            delayToReturn.enabled = true;
+            return delayToReturn;
         }
 
         public DEL_RunForSeconds GetRunForSeconds()
         {
-            for (int i = 0; i < RunForSeconds.Length; i++)
+            for (int i = 0; i < RunForSeconds.Count; i++)
             {
                 if (RunForSeconds[i].enabled) continue;
 
@@ -147,8 +189,19 @@ namespace MACG.Utility
                 return RunForSeconds[i];
             }
 
-            Debug.LogError("Can't return a 'RunForSeconds'. All are used. ._.");
-            return null;
+            Debug.LogError($"Reached limit for ''DEL_RunForSeconds''. We're adding {AUTO_GROW_COUNT} new components.");
+
+            DEL_RunForSeconds delayToReturn = null;
+            for (int i = 0; i < AUTO_GROW_COUNT; i++)
+            {
+                DEL_RunForSeconds newDelay = gameObject.AddComponent<DEL_RunForSeconds>();
+                RunForSeconds.Add(newDelay);
+                newDelay.enabled = false;
+                if(i == 0) delayToReturn = newDelay;
+            }
+
+            delayToReturn.enabled = true;
+            return delayToReturn;
         }
 
         #endregion
@@ -168,16 +221,16 @@ namespace MACG.Utility
         
         private void ResetAll()
         {
-            for (int i = 0; i < RunInNextFrames.Length; i++)
+            for (int i = 0; i < RunInNextFrames.Count; i++)
                 if(!RunInNextFrames[i].persist) RunInNextFrames[i].enabled = false;
             
-            for (int i = 0; i < RunInSeconds.Length; i++)
+            for (int i = 0; i < RunInSeconds.Count; i++)
                 if(!RunInSeconds[i].persist) RunInSeconds[i].enabled = false;
             
-            for (int i = 0; i < RunForFrames.Length; i++)
+            for (int i = 0; i < RunForFrames.Count; i++)
                 if(!RunForFrames[i].persist) RunForFrames[i].enabled = false;
             
-            for (int i = 0; i < RunForSeconds.Length; i++)
+            for (int i = 0; i < RunForSeconds.Count; i++)
                 if(!RunForSeconds[i].persist) RunForSeconds[i].enabled = false;
         }
     }
